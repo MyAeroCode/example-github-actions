@@ -1,33 +1,59 @@
-# This is a basic workflow to help you get started with Actions
-
+#
+# 워크플로우의 이름입니다.
 name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+#
+# 워크플로우가 트리거될 조건을 설정합니다.
+# master에 push 또는 pull_request가 발생할 경우에 실행됩니다.
 on:
     push:
         branches: [master]
     pull_request:
         branches: [master]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+#
+# 워크플로우가 실행할 작업들을 1개 이상 정의합니다.
+# 기본적으로는 병렬로 실행되지만, needs 특성으로 인해 작업간에 선행관계가 주어진 경우 순행적으로 실행됩니다.
 jobs:
-    # This workflow contains a single job called "build"
-    build:
-        # The type of runner that the job will run on
+    #
+    # build and test라는 이름의 작업을 정의합니다.
+    build_and_test:
+        #
+        # 우분투 운영체제에서 가상기계를 실행합니다.
+        # "우분투 가상기계"를 실행하는 것이 아니라,
+        # "우분투" 위에서 "가상기계"를 실행하는 것 입니다.
         runs-on: ubuntu-latest
 
-        # Steps represent a sequence of tasks that will be executed as part of the job
+        #
+        # 작업을 실행할 테스트 환경을 설정합니다.
+        # 4개의 운영체제에서 각각 3개의 노드 버전으로 테스트 환경을 설정했으므로,
+        # 총 12개의 테스트 환경에서 작업을 수행합니다.
+        strategy:
+            matrix:
+                node-version: [8.x, 10.x, 12.x]
+                container:
+                    [
+                        "ubuntu-latest",
+                        "centos-latest",
+                        "windows-latest",
+                        "macos-latest",
+                    ]
+
+        #
+        # 작업의 구체적인 명령어를 여기에 기술합니다.
         steps:
-            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+            #
+            # 타인이 공개한 Action을 사용할 수 있습니다.
+            # actions/checout에서 @v2 브런치의 액션을 사용합니다.
+            # 이 액션은 타입스크립트 프로젝트의 루트(`$GITHUB_WORKSPACE`)로 이동합니다.
             - uses: actions/checkout@v2
 
-            # Runs a single command using the runners shell
-            - name: Run a one-line script
-              run: echo Hello, world!
-
-            # Runs a set of commands using the runners shell
-            - name: Run a multi-line script
+            #
+            # 자신이 직접 명령어를 명세할 수 있습니다.
+            - name: Install dependencies.
               run: |
-                  echo Add other actions to build,
-                  echo test, and deploy your project.
+                  npm ci
+                  npm install
+
+            - name: Execute test.
+              run: npm test
