@@ -12,6 +12,8 @@ export class Counter {
     }
 
     get(): number {
-        return this.cnt;
+        //
+        // Wrong Code!
+        return 0;
     }
 }
