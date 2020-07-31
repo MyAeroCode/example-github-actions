@@ -11,6 +11,11 @@ export class Counter {
         return this.cnt;
     }
 
+    multiply(n: number): number {
+        this.cnt *= n;
+        return this.cnt;
+    }
+
     get(): number {
         return this.cnt;
     }
