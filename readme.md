@@ -538,7 +538,7 @@ jobs:
             - name: Execute test.
               run: npm test
 
-    alert_to_slack을:
+    alert_to_slack:
         runs-on: ubuntu-latest
 
         #
